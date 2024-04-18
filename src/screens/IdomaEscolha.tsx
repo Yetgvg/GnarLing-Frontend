@@ -16,18 +16,18 @@ function IdiomaEscolha({ navigation }: any) {
       <View style={styles.LinePurple}></View>
       <View style={styles.FormButtons}>
         <TouchableOpacity
-          style={[styles.button, selectedLanguage === 'Inglês' && styles.selectedButton]}
-          onPress={() => handleLanguageSelect('Inglês')}
+          style={[styles.button, selectedLanguage === '2' && styles.selectedButton]}
+          onPress={() => handleLanguageSelect('2')}
         >
           <Image source={require('../assets/EUA_Flag.png')} />
-          <Text style={[styles.textBtn, selectedLanguage === 'Inglês' && styles.selectedText]}>Inglês</Text>
+          <Text style={[styles.textBtn, selectedLanguage === '2' && styles.selectedText]}>Inglês</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, selectedLanguage === 'Chuchubana' && styles.selectedButton]}
-          onPress={() => handleLanguageSelect('Chuchubana')}
+          style={[styles.button, selectedLanguage === '3' && styles.selectedButton]}
+          onPress={() => handleLanguageSelect('3')}
         >
           <Image source={require('../assets/Gnar_Flag.png')} />
-          <Text style={[styles.textBtn, selectedLanguage === 'Chuchubana' && styles.selectedText]}>Chuchubana</Text>
+          <Text style={[styles.textBtn, selectedLanguage === '3' && styles.selectedText]}>Chuchubana</Text>
         </TouchableOpacity>
       </View>
       <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: '25%' }}>

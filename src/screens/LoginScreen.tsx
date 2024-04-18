@@ -1,108 +1,105 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View, Image, Dimensions } from 'react-native';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-const windowHeight = Dimensions.get('window').height;
+const LoginScreen = ({ navigation }: any) => {
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
 
-function LoginScreen({ navigation }: { navigation: any }) {
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../assets/gnarLogin.png')} style={styles.logo} />
-      </View>
-      <View style={styles.LinePurple}>
-        <View style={styles.form}>
-          <View>
-            <Text style={styles.Titulo}>Gnarlang</Text>
-            <Text style={styles.SubTitulo}>Aprenda o chuchubana como ninguém</Text>
-          </View>
-          <View style={styles.footer}>
+    const handleLogin = () => {
 
-            <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Idioma')}>
-              <Text style={styles.textBtn1}>Começar agora</Text>
+        if (email === '' || senha === '') {
+            Alert.alert("Alerta!!!", "Preencha todos os campos, antes de mandar cadastrar.");
+            return;
+        }
+
+        const userData = {
+            email,
+            senha
+        }
+
+        axios.post('http://192.168.1.139:3333/users/login', userData)
+            .then(response => {
+                // console.log(response.data.message);
+                const token = response.data.token;
+                navigation.navigate('Home',{token})
+            })
+            .catch(error => {
+                if (error.response) {
+                    // O servidor respondeu com um status de erro
+                    console.error('Erro ao Logar:', error.response.data.message);
+                    Alert.alert('Erro', error.response.data.message);
+                    navigation.navigate
+                } else if (error.request) {
+                    // A solicitação foi feita, mas não recebeu resposta
+                    console.error('Erro ao fazer a solicitação:', error.request);
+                    Alert.alert('Erro', 'Ocorreu um erro ao fazer a solicitação. Por favor, tente novamente.');
+                } else {
+                    // Ocorreu um erro ao configurar a solicitação
+                    console.error('Erro:', error.message);
+                    Alert.alert('Erro', 'Ocorreu um erro. Por favor, tente novamente mais tarde.');
+                }
+            })
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Faça login</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Senha"
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry={true}
+            />
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.button2}>
-              <Text style={styles.textBtn2}>Já tenho uma conta</Text>
-            </TouchableOpacity>
-          </View>
-          <View></View>
         </View>
-      </View>
-    </SafeAreaView>
-  );
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-    paddingBottom: 20
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: 50,
-    paddingBottom: 20,
-  },
-  logo: {
-    width: 300,
-    height: 200,
-  },
-  LinePurple: {
-    backgroundColor: '#8A2BE2',
-    paddingTop: 17,
-    borderRadius: 30
-  },
-  form: {
-    minHeight: windowHeight * 0.8,
-    flex: 1,
-    justifyContent: "space-between",
-    padding: 20,
-    borderRadius: 30,
-    backgroundColor: '#EAEAEA',
-  },
-  Titulo: {
-    fontSize: 48,
-    alignSelf: 'center',
-    color: '#8A2BE2',
-  },
-  SubTitulo: {
-    fontSize: 25,
-    textAlign: 'center',
-    top: 20,
-  },
-  footer: {
-    alignItems: 'center',
-    marginTop: '15%',
-    marginBottom: '50%'
-  },
-  button1: {
-    marginTop: '5%',
-    backgroundColor: '#8A2BE2',
-    width: '90%',
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 20,
-    elevation:10
-  },
-  textBtn1:{
-    color:'white',
-    fontSize:22,
-  },
-  button2: {
-    marginTop: '5%',
-    backgroundColor: '#EAEAEA',
-    width: '90%',
-    alignItems: 'center',
-    padding: 15,
-    borderRadius: 20,
-    borderWidth:1,
-    borderColor:'#8A2BE2',
-    elevation:10
-  },
-  textBtn2:{
-    color:'#8A2BE2',
-    fontSize:22,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        height: 40,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginBottom: 15,
+    },
+    button: {
+        backgroundColor: '#8A2BE2',
+        padding: 15,
+        borderRadius: 10,
+        width: '100%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+    },
 });
 
 export default LoginScreen;
