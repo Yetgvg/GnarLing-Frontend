@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-const IdiomaEscolha: React.FC = () => {
+function IdiomaEscolha({ navigation }: any) {
   const [selectedLanguage, setSelectedLanguage] = useState('');
 
   const handleLanguageSelect = (language: string) => {
     setSelectedLanguage(language);
   };
-  
+
   return (
     <View>
       <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: '10%' }}>
@@ -31,7 +31,7 @@ const IdiomaEscolha: React.FC = () => {
         </TouchableOpacity>
       </View>
       <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: '25%' }}>
-        <TouchableOpacity style={styles.buttonContinuar} disabled={!selectedLanguage}>
+        <TouchableOpacity style={styles.buttonContinuar} disabled={!selectedLanguage} onPress={() => navigation.navigate('Cadastro',{Idioma:selectedLanguage})}>
           <Text style={styles.textContinuar}>Continuar</Text>
         </TouchableOpacity>
       </View>

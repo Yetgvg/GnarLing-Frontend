@@ -17,7 +17,7 @@ function LoginScreen({ navigation }: { navigation: any }) {
           </View>
           <View style={styles.footer}>
 
-            <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Cadastro')}>
+            <TouchableOpacity style={styles.button1} onPress={() => navigation.navigate('Idioma')}>
               <Text style={styles.textBtn1}>Começar agora</Text>
             </TouchableOpacity>
 
