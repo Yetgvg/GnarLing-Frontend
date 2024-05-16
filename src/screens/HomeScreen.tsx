@@ -1,42 +1,49 @@
 import { jwtDecode } from 'jwt-decode';
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import LessonMap from '../components/LessonMap';
 
 const HomeScreen = ({ route, navigation }: any) => {
 
-    const { token } = route.params;
+    const [lessons, setLessons] = useState<string[]>([]);
 
-    // useEffect(() => {
-    //     const decodedToken = jwtDecode(token);
-    //     console.log(decodedToken);
-    // }, []);
+    useEffect(() => {
+        const fetchLessons = async () => {
+            try {
+                const response = await fetch('http://192.168.1.139:3333/licao/');
+                const data = await response.json();
+                // Supondo que a resposta do backend seja um array de strings
+                setLessons(data);
+            } catch (error) {
+                console.error('Erro ao buscar as lições:', error);
+            }
+        };
+
+        // Chamando a função para buscar as lições ao montar o componente
+        fetchLessons();
+    }, []);
+
+    const handlePressLesson = (lesson: string) => {
+        navigation.navigate('Question', { lesson });
+    };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Bem-vindo {token.nome} à Página Inicial</Text>
-            <TouchableOpacity style={styles.BtnCadastrar} onPress={() => navigation.navigate('Index')}>
-                <Text style={styles.textContinuar}>Sair</Text>
-            </TouchableOpacity>
-            <View style={styles.ViewCadastrar}>
-                <Image source={require('../assets/GnarHi.gif')} />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+                <LessonMap lessons={lessons} onPressLesson={handlePressLesson} />
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
 // Estilos
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
-    
-    title: { fontSize: 15, fontWeight: 'bold', marginBottom: 20 },
-
-    ViewCadastrar: { alignItems: 'center', justifyContent: 'center', marginTop: '25%' },
-
+    scrollContainer: { flexGrow: 1, justifyContent: 'center', },
     BtnCadastrar: {
-        marginTop: '5%', backgroundColor: '#8A2BE2', width: '50%', alignItems: 'center', padding: 5, borderRadius: 20,
+        marginVertical: '5%', backgroundColor: '#8A2BE2', width: '50%', alignItems: 'center', padding: 5, borderRadius: 20,
         elevation: 10
     },
-
     textContinuar: { color: 'white', fontSize: 22, },
 });
 

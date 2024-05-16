@@ -8,7 +8,9 @@ import IdiomaEscolha from './src/screens/IdomaEscolha';
 import CadastroScreen from './src/screens/CadastroScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import LoginScreen from './src/screens/LoginScreen';
-import { Alert, Button } from 'react-native';
+import {Text, TouchableOpacity } from 'react-native';
+import BottonTab from './src/screens/BottonTab';
+import QuestionScreen from './src/screens/QuestionScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +28,8 @@ function App() {
               backgroundColor: '#8A2BE2'
             },
             headerTintColor: 'white',
-          }} />
+          }}
+        />
         <Stack.Screen
           name='Cadastro'
           component={CadastroScreen}
@@ -36,8 +39,9 @@ function App() {
               backgroundColor: '#8A2BE2'
             },
             headerTintColor: 'white',
-          }} />
-          <Stack.Screen
+          }}
+        />
+        <Stack.Screen
           name='Login'
           component={LoginScreen}
           options={{
@@ -46,10 +50,28 @@ function App() {
               backgroundColor: '#8A2BE2'
             },
             headerTintColor: 'white',
-          }} />
-          <Stack.Screen
-          name='Home'
-          component={HomeScreen}
+          }}
+        />
+        <Stack.Screen
+          name='BottonTab'
+          component={BottonTab}
+          options={({ navigation, route }) => ({
+            headerRight: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('Index')}>
+                <Text style={{ color: 'white', marginRight: 10 }}>Sair</Text>
+              </TouchableOpacity>
+            ),
+            title: '',
+            headerStyle: {
+              backgroundColor: '#8A2BE2',
+            },
+            headerTintColor: 'white',
+            headerBackVisible: false,
+          })}
+        />
+        <Stack.Screen
+          name='Question'
+          component={QuestionScreen}
           options={{
             title: '',
             headerStyle: {
@@ -57,7 +79,8 @@ function App() {
             },
             headerTintColor: 'white',
             headerBackVisible: false,
-          }} />
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

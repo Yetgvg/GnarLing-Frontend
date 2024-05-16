@@ -22,7 +22,7 @@ const LoginScreen = ({ navigation }: any) => {
             .then(response => {
                 // console.log(response.data.message);
                 const token = response.data.token;
-                navigation.navigate('Home',{token})
+                navigation.navigate('BottonTab',{token})
             })
             .catch(error => {
                 if (error.response) {
