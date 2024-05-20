@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 const PerfilScreen = ({ navigation }: any) => {
     const [userData, setUserData] = useState<any>(null);
+    const [totalScore, setTotalScore] = useState(0);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch('http://192.168.1.139:3333/users/email/felipe98ju@hotmail.com');
-                const data = await response.json();
-                setUserData(data);
-            } catch (error) {
-                console.error('Erro ao buscar dados do usuário:', error);
-            }
-        };
+    const fetchUserData = async () => {
+        try {
+            const response = await fetch('http://192.168.5.202:3333/users/email/felipe98ju@hotmail.com');
+            const data = await response.json();
+            setUserData(data);
+            setTotalScore(calculateTotalScore(data.progresso));
+        } catch (error) {
+            console.error('Erro ao buscar dados do usuário:', error);
+        }
+    };
 
-        fetchUserData();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            fetchUserData();
+        }, [])
+    );
 
     const handleLogout = () => {
-        navigation.navigate('Index')
+        navigation.navigate('Index');
         console.log('Usuário deslogado');
     };
 
@@ -46,7 +51,7 @@ const PerfilScreen = ({ navigation }: any) => {
                     </View>
                     <View style={styles.profileInfo}>
                         <Text style={styles.label}>Progresso:</Text>
-                        <Text style={styles.value}>{calculateTotalScore(userData.progresso)} pontos</Text>
+                        <Text style={styles.value}>{totalScore} pontos</Text>
                     </View>
                 </View>
             )}
@@ -96,7 +101,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#8A2BE2',
         padding: 15,
         borderRadius: 10,
-        marginTop: '90%',
+        marginTop: 'auto', // Altera para garantir que o botão fique no final
         alignItems: 'center',
     },
     logoutText: {
