@@ -1,109 +1,91 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useToken } from '../context/TokenContext';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 
-const LoginScreen = ({ navigation }: any) => {
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
-
-    const { setToken } = useToken();
-
-    const handleLogin = () => {
-
-        if (email === '' || senha === '') {
-            Alert.alert("Alerta!!!", "Preencha todos os campos, antes de mandar cadastrar.");
-            return;
+const LessonMap = ({ lessons, onPressLesson }: { lessons: string[], onPressLesson: (lesson: string) => void }) => {
+    const getLessonStyle = (index: number) => {
+        const position = index % 5;
+        switch (position) {
+            case 0: return styles.leftLesson;
+            case 1: return styles.leftCenterLesson;
+            case 2: return styles.centerLesson;
+            case 3: return styles.rightCenterLesson;
+            case 4: return styles.rightLesson;
+            default: return styles.centerLesson;
         }
-
-        const userData = {
-            email,
-            senha
-        }
-
-        axios.post('http://192.168.1.139:3333/users/login', userData)
-            .then(response => {
-                // console.log(response.data.message);
-                const token = response.data.token;
-                setToken(token);
-                navigation.navigate('BottonTab',{token})
-            })
-            .catch(error => {
-                if (error.response) {
-                    // O servidor respondeu com um status de erro
-                    console.error('Erro ao Logar:', error.response.data.message);
-                    Alert.alert('Erro', error.response.data.message);
-                    navigation.navigate
-                } else if (error.request) {
-                    // A solicitação foi feita, mas não recebeu resposta
-                    console.error('Erro ao fazer a solicitação:', error.request);
-                    Alert.alert('Erro', 'Ocorreu um erro ao fazer a solicitação. Por favor, tente novamente.');
-                } else {
-                    // Ocorreu um erro ao configurar a solicitação
-                    console.error('Erro:', error.message);
-                    Alert.alert('Erro', 'Ocorreu um erro. Por favor, tente novamente mais tarde.');
-                }
-            })
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Faça login</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                value={senha}
-                onChangeText={setSenha}
-                secureTextEntry={true}
-            />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.mapContainer}>
+                    {lessons.map((lesson, index) => (
+                        <View key={index} style={styles.lessonContainer}>
+                            <TouchableOpacity
+                                style={[styles.lessonButton, getLessonStyle(index)]}
+                                onPress={() => onPressLesson(lesson)}
+                            >
+                                <Text style={styles.lessonText}>Lição {index + 1}</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     );
 };
 
+const screenWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        alignItems: 'center',
+    },
+    scrollContainer: {
+        flexGrow: 1,
         justifyContent: 'center',
+    },
+    mapContainer: {
         alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 20,
+        marginBottom: '30%'
     },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
+    lessonContainer: {
+        alignItems: 'center',
     },
-    input: {
-        width: '100%',
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        marginBottom: 15,
-    },
-    button: {
-        backgroundColor: '#8A2BE2',
+    lessonButton: {
         padding: 15,
+        marginVertical: 10,
         borderRadius: 10,
-        width: '100%',
-        alignItems: 'center',
     },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
+    lessonText: {
+        color: 'white',
+        fontSize: 16,
+    },
+    leftLesson: {
+        backgroundColor: '#8A2BE2',
+        marginLeft: 0,
+        marginRight: 'auto',
+    },
+    leftCenterLesson: {
+        backgroundColor: '#8A2BE2',
+        marginLeft: '10%',
+        marginRight: 'auto',
+    },
+    centerLesson: {
+        backgroundColor: '#8A2BE2',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    rightCenterLesson: {
+        backgroundColor: '#8A2BE2',
+        marginLeft: 'auto',
+        marginRight: '10%',
+    },
+    rightLesson: {
+        backgroundColor: '#8A2BE2',
+        marginLeft: 'auto',
+        marginRight: 0,
     },
 });
 
-export default LoginScreen;
+export default LessonMap;
