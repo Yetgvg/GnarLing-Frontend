@@ -1,10 +1,13 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useToken } from '../context/TokenContext';
 
 const LoginScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+
+    const { setToken } = useToken();
 
     const handleLogin = () => {
 
@@ -22,6 +25,7 @@ const LoginScreen = ({ navigation }: any) => {
             .then(response => {
                 // console.log(response.data.message);
                 const token = response.data.token;
+                setToken(token);
                 navigation.navigate('BottonTab',{token})
             })
             .catch(error => {

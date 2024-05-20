@@ -1,16 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { useToken } from '../context/TokenContext';
 
 const QuestionScreen = ({ route, navigation }: any) => {
     const { lesson } = route.params;
     const [shuffledOptions, setShuffledOptions] = useState<string[]>([]);
+    const [errorCount, setErrorCount] = useState(0);
+
+    const { token } = useToken();
+    console.log(token?.id, token?.email);
 
     useEffect(() => {
-        // Embaralhe as opções de resposta
-        const options = [lesson.resposta, ...generateRandomOptions(lesson.resposta)];
-        shuffleArray(options);
-        setShuffledOptions(options);
-    }, []);
+        const fetchWords = async () => {
+            try {
+                const response = await fetch('http://192.168.1.139:3333/palavras/');
+                const data = await response.json();
+                // Filtra a resposta correta se ela já estiver nas palavras do backend
+                const randomOptions = data.filter((word: { palavra: string }) => word.palavra !== lesson.resposta).map((word: { palavra: string }) => word.palavra);
+                // Seleciona as primeiras três opções
+                shuffleArray(randomOptions);
+                const selectedOptions = randomOptions.slice(0, 3);
+                const options = [lesson.resposta, ...selectedOptions];
+                shuffleArray(options);
+                setShuffledOptions(options);
+            } catch (error) {
+                console.error('Erro ao buscar palavras:', error);
+            }
+        };
+
+        fetchWords();
+    }, [lesson.resposta]);
 
     const shuffleArray = (array: any[]) => {
         for (let i = array.length - 1; i > 0; i--) {
@@ -19,21 +38,46 @@ const QuestionScreen = ({ route, navigation }: any) => {
         }
     };
 
-    const generateRandomOptions = (answer: string) => {
-        // Aqui você pode implementar a lógica para gerar opções de resposta aleatórias
-        // Por exemplo, você pode pegar palavras de um dicionário ou gerar palavras aleatórias
-        // Neste exemplo simples, estamos apenas repetindo a resposta algumas vezes
-        const randomOptions = [];
-        for (let i = 0; i < 3; i++) {
-            randomOptions.push(answer.toUpperCase());
+    const handleOptionPress = async (option: string) => {
+        if (option === lesson.resposta) {
+            try {
+                const response = await fetch(`http://192.168.1.139:3333/users/${token?.id}/progress/${lesson.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    // Mostra uma mensagem de sucesso para o usuário
+                    Alert.alert('Correto!', 'Você acertou a resposta e seu progresso foi atualizado.',
+                        [{ text: 'OK', onPress: () => navigation.navigate('Home') }]
+                    );
+                } else {
+                    // Se houver algum problema com a requisição, exibe uma mensagem de erro
+                    Alert.alert('Erro!', 'Ocorreu um erro ao atualizar o seu progresso.', [{ text: 'OK' }]);
+                }
+            } catch (error) {
+                // Se houver um erro na requisição, exibe uma mensagem de erro
+                Alert.alert('Erro!', 'Ocorreu um erro ao atualizar o seu progresso.', [{ text: 'OK' }]);
+                console.error('Erro ao atualizar o progresso:', error);
+            }
+        } else {
+            const newErrorCount = errorCount + 1;
+            setErrorCount(newErrorCount);
+
+            if (newErrorCount >= 3) {
+                Alert.alert(
+                    'Errado!',
+                    'Você atingiu o limite de erros. Voltando para a tela Home.',
+                    [{ text: 'OK', onPress: () => navigation.navigate('Home') }]
+                );
+            } else {
+                Alert.alert('Errado!', 'Você errou a resposta. Tente novamente.', [{ text: 'OK' }]);
+            }
         }
-        return randomOptions;
     };
 
-    const handleOptionPress = (option: string) => {
-        // Implemente a lógica para verificar se a opção selecionada está correta
-        console.log('Opção selecionada:', option);
-    };
 
     return (
         <View>
