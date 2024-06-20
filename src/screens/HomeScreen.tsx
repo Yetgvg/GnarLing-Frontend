@@ -7,13 +7,13 @@ const HomeScreen = ({ route, navigation }: any) => {
 
     const [lessons, setLessons] = useState<string[]>([]);
     const { token } = route.params;
-    console.log(token)
 
     useEffect(() => {
         const fetchLessons = async () => {
             try {
                 const response = await fetch(`http://192.168.1.139:3333/licao/idioma/${token.Idioma.id}`);
                 const data = await response.json();
+                console.log(data);
                 // Supondo que a resposta do backend seja um array de strings
                 setLessons(data);
             } catch (error) {

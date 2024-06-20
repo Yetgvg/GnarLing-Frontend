@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 
+
+
 const LessonMap = ({ lessons, onPressLesson }: { lessons: string[], onPressLesson: (lesson: string) => void }) => {
     return (
         <View style={styles.container}>

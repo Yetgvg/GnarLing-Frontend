@@ -1,14 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useToken } from '../context/TokenContext';
 
 const PerfilScreen = ({ navigation }: any) => {
     const [userData, setUserData] = useState<any>(null);
     const [totalScore, setTotalScore] = useState(0);
+    const { token } = useToken();
+    console.log(token)
 
     const fetchUserData = async () => {
         try {
-            const response = await fetch('http://192.168.5.202:3333/users/email/felipe98ju@hotmail.com');
+            const response = await fetch(`http://192.168.1.139:3333/users/email/${token?.email}`);
             const data = await response.json();
             setUserData(data);
             setTotalScore(calculateTotalScore(data.progresso));
